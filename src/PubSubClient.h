@@ -12,6 +12,9 @@
 #include "Client.h"
 #include "Stream.h"
 
+#include <vector>
+
+
 #define MQTT_VERSION_3_1      3
 #define MQTT_VERSION_3_1_1    4
 
@@ -78,12 +81,15 @@
 
 class PubSubClient {
 public:
-    static constexpr size_t DEFAULT_BUFFER_SIZE = 512;
+    static constexpr size_t MIN_BUFFER_SIZE = 128;
+    static constexpr size_t MAX_BUFFER_SIZE = 4*1024;
+    static constexpr size_t BUFFER_SIZE_STEP = 128;
 private:
    
    Client* _client;
-   uint8_t* buffer = nullptr;
-   size_t buffer_size = 0;
+   //uint8_t* buffer = nullptr;
+   //size_t buffer_size = 0;
+   std::vector<uint8> *buffer_ptr = nullptr;
    uint16_t nextMsgId;
    unsigned long lastOutActivity;
    unsigned long lastInActivity;
@@ -100,20 +106,20 @@ private:
    Stream* stream;
    int _state;
 public:
-   explicit PubSubClient(size_t buffer_size = DEFAULT_BUFFER_SIZE);
-   PubSubClient(Client& client, size_t buffer_size = DEFAULT_BUFFER_SIZE);
-   PubSubClient(IPAddress, uint16_t, Client& client, size_t buffer_size = DEFAULT_BUFFER_SIZE);
-   PubSubClient(IPAddress, uint16_t, Client& client, Stream&, size_t buffer_size = DEFAULT_BUFFER_SIZE);
-   PubSubClient(IPAddress, uint16_t, MQTT_CALLBACK_SIGNATURE,Client& client, size_t buffer_size = DEFAULT_BUFFER_SIZE);
-   PubSubClient(IPAddress, uint16_t, MQTT_CALLBACK_SIGNATURE,Client& client, Stream&, size_t buffer_size = DEFAULT_BUFFER_SIZE);
-   PubSubClient(uint8_t *, uint16_t, Client& client, size_t buffer_size = DEFAULT_BUFFER_SIZE);
-   PubSubClient(uint8_t *, uint16_t, Client& client, Stream&, size_t buffer_size = DEFAULT_BUFFER_SIZE);
-   PubSubClient(uint8_t *, uint16_t, MQTT_CALLBACK_SIGNATURE,Client& client, size_t buffer_size = DEFAULT_BUFFER_SIZE);
-   PubSubClient(uint8_t *, uint16_t, MQTT_CALLBACK_SIGNATURE,Client& client, Stream&, size_t buffer_size = DEFAULT_BUFFER_SIZE);
-   PubSubClient(const char*, uint16_t, Client& client, size_t buffer_size = DEFAULT_BUFFER_SIZE);
-   PubSubClient(const char*, uint16_t, Client& client, Stream&, size_t buffer_size = DEFAULT_BUFFER_SIZE);
-   PubSubClient(const char*, uint16_t, MQTT_CALLBACK_SIGNATURE,Client& client, size_t buffer_size = DEFAULT_BUFFER_SIZE);
-   PubSubClient(const char*, uint16_t, MQTT_CALLBACK_SIGNATURE,Client& client, Stream&, size_t buffer_size = DEFAULT_BUFFER_SIZE);
+   PubSubClient();
+   explicit PubSubClient(Client& client);
+   PubSubClient(IPAddress, uint16_t, Client& client);
+   PubSubClient(IPAddress, uint16_t, Client& client, Stream&);
+   PubSubClient(IPAddress, uint16_t, MQTT_CALLBACK_SIGNATURE,Client& client);
+   PubSubClient(IPAddress, uint16_t, MQTT_CALLBACK_SIGNATURE,Client& client, Stream&);
+   PubSubClient(uint8_t *, uint16_t, Client& client);
+   PubSubClient(uint8_t *, uint16_t, Client& client, Stream&);
+   PubSubClient(uint8_t *, uint16_t, MQTT_CALLBACK_SIGNATURE,Client& client);
+   PubSubClient(uint8_t *, uint16_t, MQTT_CALLBACK_SIGNATURE,Client& client, Stream&);
+   PubSubClient(const char*, uint16_t, Client& client);
+   PubSubClient(const char*, uint16_t, Client& client, Stream&);
+   PubSubClient(const char*, uint16_t, MQTT_CALLBACK_SIGNATURE,Client& client);
+   PubSubClient(const char*, uint16_t, MQTT_CALLBACK_SIGNATURE,Client& client, Stream&);
    ~PubSubClient();
 
    PubSubClient& setServer(IPAddress ip, uint16_t port);
@@ -139,8 +145,9 @@ public:
    boolean loop();
    boolean connected();
    int state();
-   size_t bufferSize() const;
-   void setBufferSize(size_t size);
+   //size_t bufferSize() const;
+   //void setBufferSize(size_t size);
+   bool setMinBufferSize(size_t size);
 };
 
 
