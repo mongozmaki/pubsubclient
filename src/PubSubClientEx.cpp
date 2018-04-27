@@ -4,7 +4,7 @@
   http://knolleary.net
 */
 
-#include "PubSubClient.h"
+#include "PubSubClientEx.h"
 #include "Arduino.h"
 
 namespace {
